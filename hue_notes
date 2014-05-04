@@ -1,0 +1,26 @@
+Philips Hue
+
+Running FreeRTOS/6.0.5
+
+Does eventually choose a link-local address
+
+Janky network stack
+- ethernet frame check sequence incorrect occasionally
+
+Spurious traffic:
+SSDP (every 50.5 seconds)
+ARP for 208.67.222.222 (probably Philips basestation) every 31 seconds
+DHCP discover (after LL assigned, every 60 seconds)
+
+HTTP support notes:
+Doesn't support Keep-Alive
+Doesn't support HEAD
+1 second tcp timeout
+
+
+
+GET /api/newdevelopeX/lights/ HTTP/1.1
+
+
+
+OPTIONS /api/newdevelopeX/lights/ HTTP/1.1
