@@ -9,7 +9,7 @@ Janky network stack
 
 Spurious traffic:
 SSDP (every 50.5 seconds)
-ARP for 208.67.222.222 (probably Philips basestation) every 31 seconds
+ARP for 208.67.222.222 (opendns) every 31 seconds
 DHCP discover (after LL assigned, every 60 seconds)
 
 HTTP support notes:
@@ -17,10 +17,10 @@ Doesn't support Keep-Alive
 Doesn't support HEAD
 1 second tcp timeout
 
+Really dumb SSDP implementation. Ignores MX parameter, always responds
+to any query.
 
 
 GET /api/newdevelopeX/lights/ HTTP/1.1
-
-
 
 OPTIONS /api/newdevelopeX/lights/ HTTP/1.1
