@@ -1,0 +1,14 @@
+
+comparison: 1-packet query, or 1 packet + finalization query
+
+General notes on detecting hashing vs. string comparison
+
+Time scale explation:
+     - milliseconds
+     - microseconds
+     - nanoseconds
+       -speed of light: 5 nanoseconds per meter of copper cable
+
+Delay - How long does it take a packet to arrive?
+Jitter - Delay Variation
+head of line blocking

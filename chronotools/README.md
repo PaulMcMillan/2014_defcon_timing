@@ -1,3 +1,7 @@
+=========================================================
+These notes do not yet reflect the state of the codebase.
+=========================================================
+
 Chronotools
 -----------
 
@@ -50,3 +54,17 @@ Generally speaking, we don't want to run analyze at the same time that
 we're generating data.
 
 Analyze results can feed back into generator [somehow].
+
+The analyzer steps through a packet dump one packet at a time, passing
+each packet to any bound data triggers. If the packet matches the
+trigger (e.g. there's an appropriate request string in it), the
+trigger does any processing it can do, then yields back to the step
+function, which feeds all subsequent packets into the yielded function
+until it returns. This allows the trigger to properly analyze multiple
+packet streams (even overlapping ones), without requiring each packet
+to be read more than once. Triggers usually finish by placing a timing
+result in the output queue.
+
+A filter is a special case of trigger. When it is run, it may modify
+the output queue, as well as set a flag which prevents triggers
+from inserting data into the results.
