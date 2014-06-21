@@ -1,0 +1,2 @@
+Delay packet-to-packet looks very consistent. This might be a function
+of the 2 separate RX channels being not-quite-synced.
