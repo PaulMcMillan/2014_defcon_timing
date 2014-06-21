@@ -1,24 +1,20 @@
 import json
+from pprint import pprint
 
 import requests
-from pprint import pprint
 
 import discover
 
 hue_url = discover.find_hue()
-username = "timinguser"
+
 
 print hue_url + 'api'
 res = requests.post(hue_url + 'api', headers={'Content-Type': 'text/plain'},
-                    data=json.dumps(
-                        {"devicetype": "timinguser"}
-#                         "username": username,}
-                    ))
+                    data=json.dumps({"devicetype": "timinguser"}))
 print res.json()
 for message in res.json():
     if message.get('error'):
-        if message['error']['type'] == 101:
-            raise Exception(message['error']['description'])
+        raise Exception(message['error']['description'])
     if message.get('success'):
         username = message['success']['username']
 
