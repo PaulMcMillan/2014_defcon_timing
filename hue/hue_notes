@@ -24,3 +24,8 @@ to any query.
 GET /api/newdevelopeX/lights/ HTTP/1.1
 
 OPTIONS /api/newdevelopeX/lights/ HTTP/1.1
+
+
+The api has the very strange property of not allowing usernames with _
+in them. It very oddly produces errors about the /username url when
+you try to do that. This parse error might be exploitable internally.

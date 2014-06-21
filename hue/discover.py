@@ -23,7 +23,7 @@ def find_hues():
 
 
 def find_hue():
-    return find_hues().pop()
+    return find_hues().next()
 
 
 if __name__ == '__main__':
