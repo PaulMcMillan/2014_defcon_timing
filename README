@@ -1,2 +1,5 @@
 Content, tools, and resources related to my 2014 Defcon 22 talk
 related to timing attacks.
+
+Nanosecond hardware-provided timestamps from tcpdump require libpcap
+1.5.3 or better, and a tcpdump build of 4.6rc1 or better.
