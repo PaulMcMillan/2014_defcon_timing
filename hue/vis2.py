@@ -3,6 +3,8 @@ from collections import defaultdict
 from itertools import combinations
 from pprint import pprint
 from scipy import stats
+import random
+from itertools import chain
 
 
 class QueryResponse(object):
@@ -58,18 +60,48 @@ with open('data/out.parsed') as f:
     for line in f:
         qr = QueryResponse(*line.strip().split(','))
         if qr.path.startswith('/api/'):
-            data[qr.path.replace('/api/', '')[:24]].append(qr.total_response())
+            if qr.response_count() <= 18:
+                data[qr.path.replace('/api/', '')[:24][-1]].append(
+                    qr.total_response())
+
 for k, v in data.items():
-    print k, len(v)
-data_roundup = defaultdict(int)
-for s1, s2 in combinations(data.keys(), 2):
-    d, p = stats.ks_2samp(data[s1][5000:16500],data[s2][5000:16500])
-    if p < 0.05:
-        data_roundup[s1] += 1
-        data_roundup[s2] += 1
-        print s1, s2,
-        print ' D: %s p:%s' % (d, p)
-pprint(dict(data_roundup))
+#     resx = defaultdict(int)
+#     for x in v:
+#         resx[x] += 1
+     print k, len(v)
+#     pprint(dict(resx))
+
+#START = 500
+#END = 8100
+START = 8000
+END = 15000
+while True:
+    data_roundup = defaultdict(int)
+    a, b = random.choice(xrange(16500)), random.choice(xrange(16500))
+    START = min([a,b])
+    END = max([a,b])
+    for s1, s2 in combinations(data.keys(), 2):
+        d, p = stats.ks_2samp(data[s1][START:END],data[s2][START:END])
+        if p < 0.01:
+            data_roundup[s1] += 1
+            data_roundup[s2] += 1
+            #print s1, s2,
+            #print ' D: %s p:%s' % (d, p)
+    if data_roundup and max(dict(data_roundup).values()) >= 10:
+        print END - START
+        pprint(dict(data_roundup))
+
+# import math
+# length = 15000
+# for key in data.keys():
+#     other_keys = set(data.keys())
+#     other_keys.remove(key)
+#     this_data = random.sample(data[key], length)
+#     other_data = random.sample(list(chain(*[data[x] for x in other_keys])), length)
+#     d, p = stats.ks_2samp(this_data, other_data)
+#     if p < 0.05:
+#         print
+#         print key, ' D:%s p:%s' % (d, p), max(this_data), max(other_data)
 
 # def parse_data():
 #     results = defaultdict(list)
@@ -95,5 +127,5 @@ common_params = dict(
 #     if key in [42, 43, 44]:
 #         plt.plot(sorted(value[:1200]), label=str(key), **common_params)
 # #plt.plot(sorted(parse_data('')), label='all', **common_params)
-# plt.legend()
-# plt.show()
+#plt.legend()
+#plt.show()
