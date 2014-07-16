@@ -14,15 +14,15 @@ results = defaultdict(list)
 count = 0
 stream = 0
 loop_time = time.time()
-data = pyshark.FileCapture('data/run1.pcap', keep_packets=False,
+data = pyshark.FileCapture('data/out.pcap', keep_packets=False,
                            display_filter="")
-outfile = open('data/run1.parsed', 'w')
+outfile = open('data/out.parsed', 'w')
 
 results = defaultdict(list)
 for p in data:
     if p.transport_layer == 'TCP':
         stream = p.tcp.stream
-        if stream in results:
+        if stream in results:  # we already have a series going for this stream
             if p.ip.src == results[stream][0]:  # only response packets
                 results[stream].append(p.sniff_timestamp)
                 if p.tcp.flags_fin == '1':  # the last response packet
