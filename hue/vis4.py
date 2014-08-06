@@ -50,18 +50,23 @@ class QueryResponse(object):
         """ How many packets were in the response? """
         return len(self.response)
 
+    def content_break(self):
+        """ Experimental, seems mostly accurate on my setup """
+        return self.response[5] - self.response[4]
+
     def _response_deltas(self):
         for x in range(len(self.response) - 1):
             yield self.response[x+1] - self.response[x]
 
 
 data = defaultdict(list)
-with open('data/out.parsed') as f:
+with open('data/split_09.parsed') as f:
     for line in f:
         qr = QueryResponse(*line.strip().split(','))
         if qr.path.startswith('/api/'):
             data[qr.path.replace('/api/', '')[5]].append(
-                qr.total())
+                qr.response[5] - qr.response[4])
+#                qr.last_delta())
 
 for k, v in data.items():
      print k, len(v)
@@ -69,7 +74,7 @@ for k, v in data.items():
 #START = 500
 #END = 8100
 MAXLEN = min(map(len, data.values()))
-MINLEN = 2000
+MINLEN = 3000
 while True:
     data_roundup = defaultdict(int)
     a, b = random.choice(xrange(MAXLEN)), random.choice(xrange(MAXLEN))
@@ -79,14 +84,14 @@ while True:
         continue
     for s1, s2 in combinations(data.keys(), 2):
         d, p = stats.ks_2samp(data[s1][START:END],data[s2][START:END])
-        if p < 0.01:
+        if p < 0.05:
             data_roundup[s1] += 1
             data_roundup[s2] += 1
 #            print s1, s2,
 #            print ' D: %s p:%s' % (d, p)
-    if data_roundup and max(dict(data_roundup).values()) >= 2:
+    if data_roundup and max(dict(data_roundup).values()) >= 0:
         print END - START
-        pprint(dict(data_roundup))
+        pprint(sorted(data_roundup.items(), key=lambda x: -x[1]))
 
 # import math
 # length = 15000
