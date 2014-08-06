@@ -1,4 +1,5 @@
 import json
+import random
 from pprint import pprint
 
 import requests
@@ -9,8 +10,12 @@ hue_url = discover.find_hue()
 
 
 print hue_url + 'api'
+request_dict = {
+    "devicetype": "timinguser",
+    "username": ''.join([random.choice('0123456789') for x in range(10)]),
+    }
 res = requests.post(hue_url + 'api', headers={'Content-Type': 'text/plain'},
-                    data=json.dumps({"devicetype": "timinguser"}))
+                    data=json.dumps(request_dict))
 print res.json()
 for message in res.json():
     if message.get('error'):
