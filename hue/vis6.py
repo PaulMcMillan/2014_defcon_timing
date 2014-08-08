@@ -9,12 +9,12 @@ from itertools import chain
 import results
 
 def choose_points(data):
-    return [d.total_response() - getattr(d, 'fv', 0) for d in data]
+    return [d.total_response() for d in data]
 
 
 def check_data(data):
     """ combinatoric KS, add hits """
-    data = data.sample(10000)
+#    data = data.sample(10000)
     data_roundup = defaultdict(int)
     for k1, k2 in combinations(data.keys(), 2):
         d, p = stats.ks_2samp(choose_points(data[k1]),
@@ -26,7 +26,7 @@ def check_data(data):
 
     return dict(data_roundup)
 
-data = results.read_data(bucket=r'^/api/\w{5}(\w)\w{4}/config$',
+data = results.read_data(bucket=r'^/api/\w{3}(\w)\w{6}/config$',
                          filename='data/out.parsed')
 
 

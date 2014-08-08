@@ -56,7 +56,7 @@ class QueryResponse(object):
 
 
 data = defaultdict(list)
-with open('data/16_s_0_4.parsed') as f:
+with open('data/out.parsed') as f:
     for line in f:
         qr = QueryResponse(*line.strip().split(','))
         if qr.path.startswith('/api/'):

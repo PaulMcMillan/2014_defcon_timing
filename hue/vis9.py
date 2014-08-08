@@ -9,7 +9,7 @@ from itertools import chain
 import results
 
 def choose_points(data):
-    return [d.content_break() for d in data]
+    return [d.total_response() for d in data]
 
 def check_data(data):
     #print stats.describe(choose_points(data['2']))
@@ -17,7 +17,7 @@ def check_data(data):
     print stats.kruskal(*[choose_points(d[:min_len]) for d in data.values()])
     print stats.wilcoxon(choose_points(data['1']), choose_points(data['2']))
 
-data = results.read_data(bucket=r'^/api/\w{5}(\w)\w{4}/config$',
+data = results.read_data(bucket=r'^/api/\w{3}(\w)\w+/config$',
                          filename='data/out.parsed')
 
 check_data(data)

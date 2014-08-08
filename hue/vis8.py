@@ -9,7 +9,7 @@ from itertools import chain
 import results
 
 def choose_points(data):
-    return [d.content_break() for d in data]
+    return [d.total_response() for d in data]
 
 def check_data(data):
     """compares a single sample against all other samples. Doesn't work
@@ -28,7 +28,7 @@ def check_data(data):
     return data_roundup
 
 
-data = results.read_data(bucket=r'^/api/\w{5}(\w)\w{4}/config$',
+data = results.read_data(bucket=r'^/api/\w{3}(\w)\w+/config$',
                          filename='data/out.parsed')
 
 pprint(dict(check_data(data)))
