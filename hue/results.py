@@ -81,12 +81,14 @@ class DataCollection(dict):
     def all_as_timeseries(self):
         return sorted(chain(*self.values()), key=lambda x: x.response)
 
-    def median_filter(self, point_function, kernel_size=55):
+    def median_filter(self, point_function, kernel_size=77):
         all_ts = self.all_as_timeseries()
         filtered = signal.medfilt(point_function(all_ts),
                                   kernel_size=kernel_size)
         for qr, fv in zip(all_ts, filtered):
             qr.median = fv
+        return all_ts
+
 
 def read_data(bucket=r'/api/(\w+)/config',
               filename='data/out.parsed',
@@ -98,7 +100,9 @@ def read_data(bucket=r'/api/(\w+)/config',
             qr = QueryResponse(*line.strip().split(','))
             match = re.match(bucket, qr.path)
             if match:
-                data[match.group(1)].append(qr)
+                if (qr.total_response() > 2.9475e7 and
+                    qr.total_response() < 2.9495e7):
+                    data[match.group(1)].append(qr)
 
     if print_summary:
         for k, v in data.items():
