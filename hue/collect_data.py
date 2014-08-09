@@ -13,6 +13,7 @@ import random
 import time
 import string
 import json
+import sys
 
 # monkeypatch requests
 import utils
@@ -28,24 +29,24 @@ def control_the_lights(hue_url, username):
     print "Searching for lights"
     res = s.post(api_url + 'lights')
     pprint(res.json())
-    print "Sleeping for 30 seconds"
-    time.sleep(30)
-    res = s.get(api_url + 'lights')
-    pprint(res.json())
-    light_ids = res.json().keys()
     light_color = 0
     while True:
+        res = s.get(api_url + 'lights')
+        light_ids = res.json().keys()
+        pprint(res.json())
         for light_id in light_ids:
             light_color += 25500
-            light_color = hue % 65535
+            light_color = light_color % 65535
             body = {
-                "hue": 0,
+                "hue": light_color,
+                "sat": 255,
                 "on": True,
                 "bri": 255,
             }
-            s.post('lights/{}/state'.format(light_id),
-                   body=json.dumps(body))
-            sleep(500)
+            res = s.put(api_url + 'lights/{}/state'.format(light_id),
+                        data=json.dumps(body))
+            pprint(res.json())
+            time.sleep(1)
 
 s = requests.Session()
 s.headers = {}  # make our packet smaller. The server ignores headers

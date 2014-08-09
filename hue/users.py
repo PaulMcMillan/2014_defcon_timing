@@ -2,8 +2,8 @@ import random
 import string
 from itertools import permutations
 
-#USERNAME_PREFIX= '000'
-USERNAME_PREFIX = '000003'
+#USERNAME_PREFIX= '0000'
+USERNAME_PREFIX = '000053'
 USERNAME_LENGTH = 10
 CHARSET = string.octdigits
 

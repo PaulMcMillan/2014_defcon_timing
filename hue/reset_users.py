@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import json
 import random
 from pprint import pprint
@@ -11,7 +12,7 @@ hue_url = discover.find_hue()
 
 request_dict = {
     "devicetype": "timinguser",
-    "username": users.generate_username(),
+    "username": users.generate_username().next(),
     }
 res = requests.post(hue_url + 'api', headers={'Content-Type': 'text/plain'},
                     data=json.dumps(request_dict))
