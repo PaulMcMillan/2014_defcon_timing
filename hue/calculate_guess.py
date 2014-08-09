@@ -7,6 +7,8 @@ from scipy import stats
 import random
 from itertools import chain
 
+import users
+
 import results
 
 
@@ -14,9 +16,9 @@ def choose_points(qr_list):
     return [d.total_response() for d in qr_list]
 
 
-def check_data(data, p_threshold=0.1):
+def analyze_data(data, p_threshold=0.1):
     """ combinatoric KS, add hits """
-    data = data.sample(3501)
+#    data = data.sample(3501)
     data_roundup = defaultdict(int)
     for k1, k2 in combinations(data.keys(), 2):
         # DON'T EVER USE A SAMPLE SIZE THAT IS A MULTIPLE OF 100
@@ -29,9 +31,15 @@ def check_data(data, p_threshold=0.1):
 
     return dict(data_roundup)
 
-data = results.read_data(bucket=r'^/api/\w{3}(\w)\w{6}/config$',
-                         filename='data/out.parsed')
+current_guess_pos = 5
+total_len = users.USERNAME_LENGTH
 
+data = results.read_data(bucket=r'^/api/(\w{%s})\w{%s}/config$' % (
+    current_guess_pos, total_len - current_guess_pos),
+                         data_dir='data')
+
+pprint(analyze_data(data))
+exit()
 #pprint(check_data(data))
 #exit()
 correct = 0

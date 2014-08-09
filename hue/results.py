@@ -3,6 +3,7 @@ import re
 import random
 from itertools import chain
 from scipy import signal
+import os
 
 class QueryResponse(object):
     """Class to make it easier to work with parsed data. Works with
@@ -96,27 +97,29 @@ class DataCollection(dict):
 
 
 def read_data(bucket=r'/api/(\w+)/config',
-              filename='data/out.parsed',
+              data_dir='data',
               print_summary=True):
 
     data = DataCollection()
-    with open(filename) as f:
-        for line in f:
-            try:
-                qr = QueryResponse(*line.strip().split(','))
-                match = re.match(bucket, qr.path)
-                if match:
-                    #                if (qr.total_response() > 2.9475e7 and
-                    #                    qr.total_response() < 2.9495e7):
-#                    if (qr.total_response() < 1.5501e7 and
-#                        qr.total_response() > 1.54924e7):
-                        data[match.group(1)].append(qr)
-            except Exception:
-                print "Ignoring bad result line: ", line
-                # just ignore bad data lines
-                pass
-    if print_summary:
-        for k, v in data.items():
-            print k, len(v)
-
+    for filename in os.listdir(data_dir):
+        if not filename.endswith('.parsed'):
+            continue
+        with open(os.path.join(data_dir, filename)) as f:
+            for line in f:
+                try:
+                    qr = QueryResponse(*line.strip().split(','))
+                    match = re.match(bucket, qr.path)
+                    if match:
+                        #                if (qr.total_response() > 2.9475e7 and
+                        #                    qr.total_response() < 2.9495e7):
+                        if (qr.total_response() < 1.5501e7 and
+                            qr.total_response() > 1.54924e7):
+                            data[match.group(1)].append(qr)
+                except Exception:
+                    print "Ignoring bad result line: ", line
+                    # just ignore bad data lines
+                    pass
+        if print_summary:
+            for k, v in data.items():
+                print k, len(v)
     return data
