@@ -9,11 +9,12 @@ from itertools import chain
 import results
 
 def choose_points(qr_list):
-    return [d.total_response() for d in qr_list]
+    return [d.total_response() - getattr(d, 'median', 0) for d in qr_list]
 
 
 def check_data(data):
     """ graph the values """
+#    data.median_filter(choose_points)
     for key, value in data.items():
         plt.plot([x.response[0] for x in value],
                  choose_points(value),

@@ -70,18 +70,23 @@ class DataCollection(dict):
             self[k] = v[:minlen]
 
     def sample(self, length, start=None):
+        if length % 100 == 0:
+            raise Exception(
+                'Length can\'t be a multiple of 100. numpy is stupid.')
         if start is None:
             start = random.randrange(self.minlen() - length)
-        print length, start
+        print length, start,
         result = DataCollection()
         for k, v in self.items():
             result[k] = v[start:start+length]
+        print "sample time: ", (
+            result[k][-1].response[0] - result[k][0].response[0])/1.0e9/60
         return result
 
     def all_as_timeseries(self):
         return sorted(chain(*self.values()), key=lambda x: x.response)
 
-    def median_filter(self, point_function, kernel_size=77):
+    def median_filter(self, point_function, kernel_size=255):
         all_ts = self.all_as_timeseries()
         filtered = signal.medfilt(point_function(all_ts),
                                   kernel_size=kernel_size)
@@ -97,13 +102,19 @@ def read_data(bucket=r'/api/(\w+)/config',
     data = DataCollection()
     with open(filename) as f:
         for line in f:
-            qr = QueryResponse(*line.strip().split(','))
-            match = re.match(bucket, qr.path)
-            if match:
-                if (qr.total_response() > 2.9475e7 and
-                    qr.total_response() < 2.9495e7):
-                    data[match.group(1)].append(qr)
-
+            try:
+                qr = QueryResponse(*line.strip().split(','))
+                match = re.match(bucket, qr.path)
+                if match:
+                    #                if (qr.total_response() > 2.9475e7 and
+                    #                    qr.total_response() < 2.9495e7):
+#                    if (qr.total_response() < 1.5501e7 and
+#                        qr.total_response() > 1.54924e7):
+                        data[match.group(1)].append(qr)
+            except Exception:
+                print "Ignoring bad result line: ", line
+                # just ignore bad data lines
+                pass
     if print_summary:
         for k, v in data.items():
             print k, len(v)
