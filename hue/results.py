@@ -98,7 +98,7 @@ class DataCollection(dict):
 
 def read_data(bucket=r'/api/(\w+)/config',
               data_dir='data',
-              print_summary=True):
+              print_summary=False):
 
     data = DataCollection()
     for filename in os.listdir(data_dir):

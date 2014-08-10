@@ -6,6 +6,7 @@ from pprint import pprint
 from scipy import stats
 import random
 from itertools import chain
+import sys
 
 import users
 
@@ -31,7 +32,13 @@ def analyze_data(data, p_threshold=0.1):
 
     return dict(data_roundup)
 
-current_guess_pos = 5
+if len(sys.argv) > 1:
+    # oh boy, adding options. rewrite this after the talk...
+    prefix = sys.argv[1]
+else:
+    prefix = users.USERNAME_PREFIX
+print "Using Prefix: ", prefix
+current_guess_pos = len(prefix) + 1
 total_len = users.USERNAME_LENGTH
 
 data = results.read_data(bucket=r'^/api/(\w{%s})\w{%s}/config$' % (
