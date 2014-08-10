@@ -3,3 +3,16 @@ related to timing attacks.
 
 Nanosecond hardware-provided timestamps from tcpdump require libpcap
 1.5.3 or better, and a tcpdump build of 4.6rc1 or better.
+
+Interesting bits in this giant pile of mess:
+
+hue/calculate_guess.py
+hue/capture.sh
+hue/collect_data.py
+hue/reset_users.py
+
+
+Come talk to me. I'll help you get it running. I want someone else to
+reproduce this!
+
+-Paul
