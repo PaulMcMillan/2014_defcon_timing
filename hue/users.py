@@ -1,6 +1,6 @@
 import random
 import string
-from itertools import permutations
+from itertools import product
 
 USERNAME_PREFIX = '0000'
 #USERNAME_PREFIX = '00004367'
@@ -15,18 +15,16 @@ def generate_username(prefix=USERNAME_PREFIX,
     worlds...
     """
     suffix_length = length - len(prefix)
-    perms_iterable = list('0' + CHARSET + '7') # don't ask
     # this shuffle is not numerically necessary assuming a truly random
     # username, but it makes people feel more comfortable with the
     # approach.
-    random.shuffle(perms_iterable)
-    perms_iterable = ''.join(perms_iterable)
+    product_input = [charset() for x in range(suffix_length)]
 
     # keep going even after we've done all the combinations, in case
-    # of other failure elsewhere in the program
+    # of other failure elsewhere
     count = 0
     while True:
-        for suffix in permutations(perms_iterable, suffix_length):
+        for suffix in product(*product_input):
             yield prefix + ''.join(suffix)
 
 

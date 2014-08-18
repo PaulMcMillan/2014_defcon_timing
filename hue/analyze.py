@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import pyshark
 from decimal import Decimal
 from collections import defaultdict
@@ -35,7 +36,7 @@ while True:
         for p in data:
             if p.transport_layer == 'TCP':
                 stream = p.tcp.stream
-                if stream in results:  #already have a series going for this stream
+                if stream in results:  # already have a series going
                     if p.ip.src == results[stream][0]:  # only response packets
                         results[stream].append(p.sniff_timestamp)
                         if p.tcp.flags_fin == '1':  # the last response packet
@@ -49,4 +50,4 @@ while True:
                         results[stream].append(p.http.host)
                         results[stream].append(p.http.request_uri)
                         results[stream].append(p.sniff_timestamp)
-    time.sleep(1)
+    time.sleep(2)

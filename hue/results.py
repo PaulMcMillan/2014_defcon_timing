@@ -61,10 +61,10 @@ class DataCollection(dict):
     def __missing__(self, arg):
         self[arg] = list()
         return self[arg]
-    
+
     def minlen(self):
         return min(map(len, self.values()))
-    
+
     def trim(self):
         minlen = self.minlen()
         for k, v in self.items():
@@ -72,8 +72,7 @@ class DataCollection(dict):
 
     def sample(self, length, start=None):
         if length % 100 == 0:
-            raise Exception(
-                'Length can\'t be a multiple of 100. numpy is stupid.')
+            print 'Length can\'t be a multiple of 100. numpy is stupid.'
         if start is None:
             start = random.randrange(self.minlen() - length)
         print length, start,
@@ -98,17 +97,18 @@ class DataCollection(dict):
 
 def read_data(bucket=r'/api/(\w+)/config',
               data_dir='data',
-              print_summary=False):
-
+              print_summary=True,
+              postfix='.parsed'):
     data = DataCollection()
     for filename in os.listdir(data_dir):
-        if not filename.endswith('.parsed'):
+        if not filename.endswith(postfix):
             continue
         with open(os.path.join(data_dir, filename)) as f:
             for line in f:
                 try:
                     qr = QueryResponse(*line.strip().split(','))
                     match = re.match(bucket, qr.path)
+#                    print bucket, qr.path
                     if match:
                         #                if (qr.total_response() > 2.9475e7 and
                         #                    qr.total_response() < 2.9495e7):

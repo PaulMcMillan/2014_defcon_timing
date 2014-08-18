@@ -13,9 +13,9 @@ def choose_points(qr_list):
     return [d.total_response() - getattr(d, 'median', 0) for d in qr_list]
 
 
-def check_data(data, p_threshold=0.1):
+def check_data(data, p_threshold=0.01):
     """ combinatoric KS, add hits """
-    data = data.sample(3501)
+    data = data.sample(5001)
 #    data.median_filter(choose_points)
     data_roundup = defaultdict(int)
     for k1, k2 in combinations(data.keys(), 2):
@@ -30,10 +30,11 @@ def check_data(data, p_threshold=0.1):
     return dict(data_roundup)
 
 data = results.read_data(bucket=r'^/api/\w{3}(\w)\w{6}/config$',
-                         filename='data/out.parsed')
+                         data_dir='more_recent_data')
 
-#pprint(check_data(data))
-#exit()
+pprint(check_data(data))
+exit()
+
 correct = 0
 incorrect = 0
 unclear = 0

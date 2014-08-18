@@ -28,7 +28,7 @@ def check_data(data):
     plt.show()
 
 data = results.read_data(bucket=r'^/api/\w{5}(\w)\w{4}/config$',
-                         filename='data/out.parsed')
+                         data_dir='more_recent_data')
 
 
 check_data(data)

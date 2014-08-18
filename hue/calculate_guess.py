@@ -17,9 +17,8 @@ def choose_points(qr_list):
     return [d.total_response() for d in qr_list]
 
 
-def analyze_data(data, p_threshold=0.1):
+def analyze_data(data, p_threshold=0.05):
     """ combinatoric KS, add hits """
-#    data = data.sample(3501)
     data_roundup = defaultdict(int)
     for k1, k2 in combinations(data.keys(), 2):
         # DON'T EVER USE A SAMPLE SIZE THAT IS A MULTIPLE OF 100
@@ -32,50 +31,35 @@ def analyze_data(data, p_threshold=0.1):
 
     return dict(data_roundup)
 
-if len(sys.argv) > 1:
-    # oh boy, adding options. rewrite this after the talk...
-    prefix = sys.argv[1]
-else:
-    prefix = users.USERNAME_PREFIX
-print "Using Prefix: ", prefix
-current_guess_pos = len(prefix) + 1
-total_len = users.USERNAME_LENGTH
 
-data = results.read_data(bucket=r'^/api/(\w{%s})\w{%s}/config$' % (
-    current_guess_pos, total_len - current_guess_pos),
-                         data_dir='data')
+def keep_going(data):
+    # this is tuned for my device what a charset len of 8. Modify as
+    # appropriate.
+    res = analyze_data(data, p_threshold=0.1)
+    pprint(res)
+    values = sorted(res.values())
+    if values and values[-1] >= 6:
+        if (values[-1] - values[-2]) >= 2:
+            if sum(values[:-1]) < 15: # ?
+                return False
+    return True
 
-pprint(analyze_data(data))
-exit()
-#pprint(check_data(data))
-#exit()
-correct = 0
-incorrect = 0
-unclear = 0
-shortened = []
-shorten_error = 0
-ANSWER = '0'
-for x in range(1000):
-    print "Iteration: ", x
-    res = check_data(data)
-    if not res:
-        unclear += 1
-        continue
-    if ANSWER not in res.keys() and max(res.values()) >= 4:
-        pprint(res)
-        print "shorten error"
-        shorten_error += 1
-    if max(res.values()) >= 4 and len(res.values()) < 8:
-        shortened.append(8 - len(res.values()))
-    sri =  sorted(res.items(), key=lambda x: -x[1])
-    pprint(sri)
-    if sri[0][0] == ANSWER and sri[0][1] <= sri[1][1] + 2 and sri[0][1] <= 5:
-        unclear += 1
-    elif sri[0][0] == ANSWER:
-        correct += 1
-    else:
-        incorrect += 1
-print correct, incorrect, float(correct)/(incorrect + correct) * 100.0
-print "shorten error ", shorten_error, " unclear: ", unclear
-print "Shortened: ", len(shortened), shortened
+prefix_len = 4
+data = results.read_data(bucket=r'^/api/(\w{%s})\w+/config$' % prefix_len,
+                         data_dir='more_recent_data',
+                         postfix='overnight.parsed')
 
+
+length = 1501
+incr_length = 101
+max_len = data.minlen()
+start = random.randint(0, max_len - length)
+while True:
+    print length, start
+    this_data = data.sample(length, start)
+    if not keep_going(this_data):
+        print "Exiting", length, start, 
+        print (this_data['0000'][-1].query - this_data['0000'][0].query
+           ) / 1.0e9 / 60
+        exit()
+    length += incr_length # this doesn't wrap quite properly.
