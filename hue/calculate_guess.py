@@ -32,7 +32,8 @@ def analyze_data(data, p_threshold=0.05):
     return dict(data_roundup)
 
 
-def keep_going(data):
+
+def next_guess(data):
     # this is tuned for my device what a charset len of 8. Modify as
     # appropriate.
     res = analyze_data(data, p_threshold=0.1)
@@ -40,10 +41,8 @@ def keep_going(data):
     values = sorted(res.values())
     if values and values[-1] >= 6:
         if (values[-1] - values[-2]) >= 2:
-            if sum(values[:-1]) < 15: # ?
-                return False
-    return True
-
+            if sum(values[:-1]) < 13: # ?
+                return max(res, key=res.get)
 
 if __name__=='__main__':
     prefix_len = 5
@@ -62,7 +61,7 @@ if __name__=='__main__':
 # #    print length, start
 # #    this_data = data.sample(length, start)
 #     this_data = data
-#     if not keep_going(this_data):
+#     if next_guess(this_data):
 #         print "Exiting", length, start, 
 #         print (this_data['0000'][-1].query - this_data['0000'][0].query
 #            ) / 1.0e9 / 60

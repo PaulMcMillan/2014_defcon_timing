@@ -119,7 +119,7 @@ def read_data(bucket=r'/api/(\w+)/config',
                     print "Ignoring bad result line: ", line
                     # just ignore bad data lines
                     pass
-        if print_summary:
-            for k, v in data.items():
-                print k, len(v)
+    if print_summary:
+        for k, v in data.items():
+            print k, len(v)
     return data

@@ -35,7 +35,7 @@ def parse_file(in_files, reparse):
                             results[stream].append(p.sniff_timestamp)
                             if p.tcp.flags_fin == '1':  # the last response
                                 outfile.write(','.join(results[stream]) + '\n')
-                                if not int(stream) % 100:
+                                if not int(stream) % 300:
                                     print stream, time.time() - start_time
                                 del results[stream]
                     elif p.highest_layer == 'HTTP':
