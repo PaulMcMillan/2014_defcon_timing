@@ -112,8 +112,8 @@ def read_data(bucket=r'/api/(\w+)/config',
                     if match:
                         #                if (qr.total_response() > 2.9475e7 and
                         #                    qr.total_response() < 2.9495e7):
-                        if (qr.total_response() < 1.5501e7 and
-                            qr.total_response() > 1.54924e7):
+#                        if (qr.total_response() < 1.5501e7 and
+#                            qr.total_response() > 1.54924e7):
                             data[match.group(1)].append(qr)
                 except Exception:
                     print "Ignoring bad result line: ", line

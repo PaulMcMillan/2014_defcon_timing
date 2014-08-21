@@ -26,6 +26,7 @@ import users
 import calculate_guess
 import results
 
+
 def control_the_lights(hue_url, username):
     """ Do something to get people's attention """
     api_url = hue_url + 'api/{}/'.format(username)
@@ -35,8 +36,9 @@ def control_the_lights(hue_url, username):
     light_color = 0
     while True:
         res = s.get(api_url + 'lights')
+        if res.json():
+            pprint(res.json())
         light_ids = res.json().keys()
-        pprint(res.json())
         for light_id in light_ids:
             light_color += 25500
             light_color = light_color % 65535
@@ -48,8 +50,10 @@ def control_the_lights(hue_url, username):
             }
             res = s.put(api_url + 'lights/{}/state'.format(light_id),
                         data=json.dumps(body))
-            pprint(res.json())
+#            pprint(res.json())
             time.sleep(1)
+        time.sleep(1)
+
 
 s = requests.Session()
 s.headers = {}  # make our packet smaller. The server ignores headers
@@ -62,7 +66,7 @@ if len(sys.argv) > 1:
 else:
     current_guess = users.USERNAME_PREFIX
 
-count = 0
+count = -1  # hack to parse data first. This lets us restart the process. Sorta
 start_time = time.time()
 interval = start_time
 username_generators = []
@@ -101,12 +105,12 @@ while True:
             print count, elapsed, 100 / (now - interval)
             interval = now
             if count % 3000 == 0:
-                time.sleep(0.1) # let any existing connections finish
+                time.sleep(0.3) # let any existing connections finish
                 print "Current guess: ", current_guess
                 print "Parsing data:"
                 subprocess.call(
                     './parse_pcap.py data/*.pcap', shell=True) # I know, I know
-                print "Analyzing data:"
+                print "Calculating next guess:"
                 data = results.read_data(
                     bucket=r'^/api/(%s\w)\w+/config$' % current_guess,
                     data_dir='data')
@@ -114,6 +118,7 @@ while True:
                 if next_guess is not None:
                     current_guess = next_guess
                     print "CHANGING GUESS: ", current_guess
-                    print "Collecting data:"
+                    subprocess.call('make clean', shell=True)  # dump old data
+                print "Collecting data:"
         time.sleep(0.005)
     random.shuffle(username_generators)
