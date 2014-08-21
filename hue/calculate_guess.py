@@ -44,22 +44,27 @@ def keep_going(data):
                 return False
     return True
 
-prefix_len = 4
-data = results.read_data(bucket=r'^/api/(\w{%s})\w+/config$' % prefix_len,
-                         data_dir='more_recent_data',
-                         postfix='overnight.parsed')
 
+if __name__=='__main__':
+    prefix_len = 5
+    data = results.read_data(bucket=r'^/api/(\w{%s})\w+/config$' % prefix_len,
+                             data_dir='data',
+                             postfix='.parsed')
+    
+    pprint(analyze_data(data, p_threshold=0.1))
 
-length = 1501
-incr_length = 101
-max_len = data.minlen()
-start = random.randint(0, max_len - length)
-while True:
-    print length, start
-    this_data = data.sample(length, start)
-    if not keep_going(this_data):
-        print "Exiting", length, start, 
-        print (this_data['0000'][-1].query - this_data['0000'][0].query
-           ) / 1.0e9 / 60
-        exit()
-    length += incr_length # this doesn't wrap quite properly.
+# length = 1501
+# incr_length = 101
+# max_len = data.minlen()
+# start = random.randint(0, max_len - length)
+
+# while True:
+# #    print length, start
+# #    this_data = data.sample(length, start)
+#     this_data = data
+#     if not keep_going(this_data):
+#         print "Exiting", length, start, 
+#         print (this_data['0000'][-1].query - this_data['0000'][0].query
+#            ) / 1.0e9 / 60
+#         exit()
+#     length += incr_length # this doesn't wrap quite properly.

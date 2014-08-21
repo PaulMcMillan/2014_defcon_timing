@@ -50,6 +50,7 @@ def control_the_lights(hue_url, username):
 
 s = requests.Session()
 s.headers = {}  # make our packet smaller. The server ignores headers
+#hue_url = 'http://169.254.159.24/'
 hue_url = discover.find_hue()
 
 if len(sys.argv) > 1:
@@ -85,4 +86,5 @@ while True:
             elapsed = now - start_time
             print count, elapsed, 100 / (now - interval)
             interval = now
+        time.sleep(0.005)
     random.shuffle(username_generators)

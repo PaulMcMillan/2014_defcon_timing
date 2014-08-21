@@ -22,13 +22,14 @@ def check_data(data):
                  alpha=0.5,
                  label=str(key),
              )
-    plt.plot([x.response[0] for x in data.all_as_timeseries()],
-             [x.median for x in data.median_filter(choose_points)])
+#    plt.plot([x.response[0] for x in data.all_as_timeseries()],
+#             [x.median for x in data.median_filter(choose_points)])
     plt.legend()
     plt.show()
 
-data = results.read_data(bucket=r'^/api/\w{5}(\w)\w{4}/config$',
-                         data_dir='more_recent_data')
+
+data = results.read_data(bucket=r'^/api/(\w{5})\w+/config$',
+                         data_dir='data')
 
 
 check_data(data)
